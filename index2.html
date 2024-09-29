@@ -3,69 +3,119 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Teacher Details</title>
-    <link rel="stylesheet" href="style.css">
-    <!-- Include jsPDF and jsPDF-AutoTable libraries -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.3/jspdf.plugin.autotable.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <title>Excel to JSON Converter</title>
+    <style>
+        /* General Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f0f4f8;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 2rem;
+            text-align: center;
+        }
+
+        form {
+            background-color: #ffffff;
+            padding: 20px 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        input[type="file"] {
+            padding: 10px;
+            margin-bottom: 20px;
+            font-size: 1rem;
+            border: 2px solid #d9e1e8;
+            border-radius: 8px;
+            transition: border 0.3s ease;
+            width: 100%;
+        }
+
+        input[type="file"]:hover, input[type="file"]:focus {
+            border: 2px solid #3498db;
+            outline: none;
+        }
+
+        button {
+            background-color: #3498db;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s ease;
+            width: 100%;
+        }
+
+        button:hover {
+            background-color: #2980b9;
+        }
+
+        #message {
+            margin-top: 20px;
+            font-size: 1rem;
+            color: #e74c3c;
+            text-align: center;
+        }
+    </style>
 </head>
 <body>
-    <header>
-        <img src="gni_logo.png" alt="GNI Logo" id="logo"> 
-        <h1>Guru Nanak Institutions Technical Campus</h1>
-    </header>
-    <main>
-        <h3 style="text-align: center; padding:20px;">Result Analysis</h3>
-        <form id="teacherForm">
-            <label for="empCode">Enter Employee ID:</label>
-            <input type="text" id="empCode" name="empCode" placeholder="Employee ID" required>
-            
-            <label for="department">Select your department:</label>
-            <select id="department" name="department" required>
-                <option value="">--Select Department--</option>        
-                <option value="CE">CE</option>
-                <option value="ME">ME</option>
-                <option value="EEE">EEE</option>
-                <option value="ECE">ECE</option>
-                <option value="CSE">CSE</option>
-                <option value="IT">IT</option>
-                <option value="AIML">AIML</option>
-                <option value="AI&DS">AI&DS</option>
-                <option value="CS">CS</option>
-                <option value="DS">DS</option>
-                <option value="IOT">IOT</option>
-            </select>
-            
-            <label for="designation">Select your designation:</label>
-            <select id="designation" name="designation" required>
-                <option value="">--Select Designation--</option>        
-                <option value="Professor">Professor</option>
-                <option value="Associate Professor">Associate Professor</option>
-                <option value="Assistant Professor">Assistant Professor</option>
-            </select>
-            
-            <!-- New Dropdown for Subject Type -->
-            <label for="subjectType">Select Subject Type:</label>
-            <select id="subjectType" name="subjectType" required>
-                <option value="theory">Theory</option>
-                <option value="lab">Lab</option>
-            </select>
-            
-            <button type="submit">Search</button>
-        </form>
-        
-        <div id="result"></div>
-        <!-- Initially hidden Print button -->
-        <button id="printButton" style="display: none; margin: 20px auto;">Print to PDF</button>
-    </main>
-     
-    <!-- Remove the inline script to prevent conflicts -->
-    <!-- <script>
-        // Existing inline script removed to prevent conflicts
-    </script> -->
+    <form id="uploadForm">
+        <h1>Excel to JSON Converter</h1>
+        <input type="file" id="excelFile" name="excelFile" accept=".xlsx" required />
+        <button type="submit">Upload and Convert</button>
+        <div id="message"></div>
+    </form>
 
-    <!-- Include the updated JavaScript file -->
-    <script src="script.js"></script>
+    <script>
+        document.getElementById('uploadForm').addEventListener('submit', async function(event) {
+            event.preventDefault(); // Prevent the default form submission
+
+            const formData = new FormData();
+            const fileInput = document.getElementById('excelFile');
+            formData.append('excelFile', fileInput.files[0]);
+
+            try {
+                const response = await fetch('/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const messageDiv = document.getElementById('message');
+                if (response.ok) {
+                    messageDiv.textContent = 'File uploaded and converted successfully!';
+                    messageDiv.style.color = '#2ecc71';
+                } else {
+                    messageDiv.textContent = 'Error processing file.';
+                    messageDiv.style.color = '#e74c3c';
+                }
+            } catch (error) {
+                console.error(error);
+                document.getElementById('message').textContent = 'Error uploading file.';
+                document.getElementById('message').style.color = '#e74c3c';
+            }
+        });
+    </script>
 </body>
 </html>
